@@ -275,7 +275,7 @@ body.dark-theme .calculator-wrapper {
     pointer-events: all;
 }
 
-/* AUTH СТИЛИ */
+/* AUTH СТИЛІ */
 .auth-container {
     max-width: 400px;
     width: 90%;
@@ -310,7 +310,7 @@ body.dark-theme .calculator-wrapper {
     display: none; 
 }
 
-/* CAPTCHA СТИЛИ */
+/* CAPTCHA СТИЛІ */
 .captcha-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -338,6 +338,47 @@ body.dark-theme .calculator-wrapper {
     transform: scale(0.92);
     background: rgba(139, 92, 246, 0.2);
 }
+
+/* ==========================================================
+   СТИЛІ ДЛЯ ПОВНОЕКРАННОЇ РЕКЛАМИ (INTERSTITIAL AD)
+   ========================================================== */
+#ad-overlay .plan-card {
+    width: 95% !important; /* Розтягуємо картку майже на всю ширину екрана */
+    max-width: 520px !important; /* На десктопі тримаємо красивий мобільний формат банера */
+    height: 85vh !important; /* Реклама займає 85% висоти вікна браузера */
+    max-height: 780px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 1.5rem !important;
+}
+
+#ad-overlay #ad-content {
+    flex-grow: 1; /* Змушуємо рекламний блок забирати весь вільний простір по висоті */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin-bottom: 1rem;
+    background: rgba(0, 0, 0, 0.01);
+}
+
+#ad-overlay #ad-content a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#ad-overlay #ad-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Картинка ідеально вписується, не розтягуючись і не деформуючись */
+    border-radius: 12px;
+}
+/* ========================================================== */
 
 /* Paywall Cards */
 .paywall-container {
@@ -559,15 +600,15 @@ body.dark-theme .calculator-wrapper {
         overflow-y: auto;
         padding: 1rem;
         transform: translateY(10px);
-        justify-content: flex-start; /* Притискаємо до верху для коректного скролу */
+        justify-content: flex-start;
     }
     .plan-card.student {
         transform: scale(1);
     }
     .plan-card {
         min-width: 100%;
-        flex: none; /* Фікс: Забороняємо карткам сплющуватися, щоб не ховалися кнопки */
-        height: auto; /* Дозволяємо підлаштовуватися під контент */
+        flex: none;
+        height: auto;
     }
 }
 
@@ -641,10 +682,6 @@ body.dark-theme .calculator-wrapper {
         padding: 0.5rem;
         gap: 1rem;
         margin-top: 2rem;
-    }
-
-    .plan-card {
-        padding: 1.5rem;
     }
 
     .price {
