@@ -6,10 +6,10 @@ let isDarkTheme = false;
 let justCalculated = false;
 let hasError = false;
 
-// Стани для знущань з користувача
 let authAttempts = 0; 
-let requireQueue = true;   // Тригер черги
-let requireCaptcha = true; // Тригер капчі
+let requireAd = true;      
+let requireQueue = true;   
+let requireCaptcha = true; 
 let captchaAttempts = 0;
 
 const clickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
@@ -38,6 +38,10 @@ const captchaOverlay = document.getElementById('captcha-overlay');
 const captchaGrid = document.getElementById('captcha-grid');
 const captchaError = document.getElementById('captcha-error');
 
+const adOverlay = document.getElementById('ad-overlay');
+const skipAdBtn = document.getElementById('skip-ad-btn');
+const adContentBox = document.getElementById('ad-content');
+
 const aiMessages = [
     "Підключення до Квантової Хмари...",
     "Оптимізація математичного шляху...",
@@ -45,7 +49,20 @@ const aiMessages = [
     "Застосування AI-фільтрів..."
 ];
 
-// ЛОГІКА АВТОРИЗАЦІЇ
+// Масив реальних банерів із посиланнями на сайти
+const realAds = [
+    { 
+        image: "images.jpg", 
+        link: "https://surl.li/myskqz" 
+    },
+    { 
+        image: "uklon_car_ua-2048x1158-1.png", 
+        link: "https://uklon.com.ua/online-order/" 
+    },
+    
+
+];
+
 function processAuth() {
     if (!authEmail.value || !authPassword.value) {
         authErrorBox.innerText = "Заповніть усі поля для доступу до нейромережі.";
@@ -56,29 +73,70 @@ function processAuth() {
     authAttempts++;
     if (authAttempts === 1) {
         errorSound.play();
-        authErrorBox.innerText = "Цей пароль уже використовує користувач mazurenok.oleksandr@gmail.com, введіть новий.";
+        authErrorBox.innerText = "Цей пароль вже використовує користувач mazurenok.oleksandr@gmail.com, введіть інший.";
         authErrorBox.style.display = "block";
         authPassword.value = ''; 
     } else {
         clickSound.play();
         authOverlay.classList.remove('active');
-        document.querySelector('.logo').innerText = `MathPro | ${authEmail.value.split('@')[0]}`;
+        document.querySelector('.logo').innerText = `MathGPT Ultra | ${authEmail.value.split('@')[0]}`;
     }
 }
 
-// ЛОГІКА ЧЕРГИ НА СЕРВЕР (CLOUD QUEUE)
+function showAd() {
+    const randomAd = realAds[Math.floor(Math.random() * realAds.length)];
+    
+    adContentBox.innerHTML = `
+        <a href="${randomAd.link}" target="_blank" style="display: block; overflow: hidden; border-radius: 8px;">
+            <img src="${randomAd.image}" alt="Реклама" style="width: 100%; height: auto; display: block; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        </a>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Натисніть на банер, щоб дізнатися більше</p>
+    `;
+
+    adContentBox.style.padding = "0";
+    adContentBox.style.border = "none";
+
+    adOverlay.classList.add('active');
+    
+    skipAdBtn.disabled = true;
+    skipAdBtn.style.opacity = '0.5';
+    skipAdBtn.style.cursor = 'not-allowed';
+    
+    let timeLeft = 5;
+    skipAdBtn.innerText = `Пропустити (${timeLeft})`;
+
+    let adInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+            skipAdBtn.innerText = `Пропустити (${timeLeft})`;
+        } else {
+            clearInterval(adInterval);
+            skipAdBtn.innerText = "Пропустити рекламу ⏭";
+            skipAdBtn.disabled = false;
+            skipAdBtn.style.opacity = '1';
+            skipAdBtn.style.cursor = 'pointer';
+        }
+    }, 1000);
+}
+
+function skipAd() {
+    clickSound.play();
+    adOverlay.classList.remove('active');
+    requireAd = false; 
+    calculate(); 
+}
+
 function showQueue() {
     queueOverlay.classList.add('active');
     let count = 14592;
     queueCountText.innerText = count.toLocaleString('uk-UA');
     
     let queueTimer = setInterval(() => {
-        // Зменшуємо число, знущально сповільнюючись під кінець
         if (count > 5000) count -= Math.floor(Math.random() * 3000) + 1000;
         else if (count > 1000) count -= Math.floor(Math.random() * 1000) + 500;
         else if (count > 100) count -= Math.floor(Math.random() * 300) + 100;
         else if (count > 10) count -= Math.floor(Math.random() * 20) + 10;
-        else if (count > 1) count = 1; // Зависаємо на одиниці для максимального болю
+        else if (count > 1) count = 1; 
         else count = 0;
 
         if (count <= 0) {
@@ -87,8 +145,8 @@ function showQueue() {
             queueCountText.innerText = count;
             setTimeout(() => {
                 queueOverlay.classList.remove('active');
-                requireQueue = false; // Чергу пройдено
-                calculate(); // Йдемо далі по циклу (на капчу)
+                requireQueue = false; 
+                calculate(); 
             }, 600);
         } else {
             queueCountText.innerText = count.toLocaleString('uk-UA');
@@ -101,10 +159,9 @@ function openPaywallFromQueue() {
     paywallOverlay.classList.add('active');
 }
 
-// ЛОГІКА КАПЧІ
 function showCaptcha() {
     const emojis = ['🚦', '🚗', '🚌', '🚲', '🚦', '🏢', '🌳', '🚦', '🚶‍♂️'];
-    emojis.sort(() => Math.random() - 0.5); // Перемішуємо
+    emojis.sort(() => Math.random() - 0.5); 
     
     captchaGrid.innerHTML = '';
     emojis.forEach(e => {
@@ -130,12 +187,11 @@ function verifyCaptcha() {
     } else {
         clickSound.play();
         captchaOverlay.classList.remove('active');
-        requireCaptcha = false; // Капчу пройдено
-        calculate(); // Йдемо на обчислення
+        requireCaptcha = false; 
+        calculate(); 
     }
 }
 
-// ЛІМІТИ
 function checkDailyLimit() {
     if (userMathPlan !== 'free') return true;
     const today = new Date().toDateString();
@@ -155,7 +211,7 @@ function incrementUsage() {
 }
 
 function updatePlanIndicator() {
-    let planName = "Базовый";
+    let planName = "Базовий";
     if (userMathPlan === 'student') planName = "Студент";
     if (userMathPlan === 'pro') planName = "Pro Ultra";
     if (userMathPlan === 'mega-pro') planName = "Mega Pro";
@@ -211,11 +267,9 @@ function clearAll() {
     resetDisplayStyle(); updateDisplay();
 }
 
-// ОСНОВНА ФУНКЦІЯ ОБЧИСЛЕННЯ З ПЕРЕШКОДАМИ
 function calculate() {
     if (!currentInput || (currentInput === '0' && fullEquation === '')) return;
 
-    // Еліта ігнорує все
     if (userMathPlan === 'mega-pro') {
         currentInput = "Hello World";
         fullEquation = "Ультимативна відповідь";
@@ -228,19 +282,21 @@ function calculate() {
         return; 
     }
 
-    // 1. ЧЕРГА (Pro пропускають чергу)
+    if (requireAd && userMathPlan !== 'pro' && userMathPlan !== 'mega-pro') {
+        showAd();
+        return;
+    }
+
     if (requireQueue && userMathPlan !== 'pro') {
         showQueue();
         return;
     }
 
-    // 2. КАПЧА (Pro пропускають капчу)
     if (requireCaptcha && userMathPlan !== 'pro') {
         showCaptcha();
         return;
     }
 
-    // Якщо ми тут, значить чергу та капчу пройдено (або пропущено планом Pro)
     const sanitized = currentInput.replace(/[+\-*/]$/, '').trim();
     let depth = 0;
     let expression = sanitized;
@@ -249,7 +305,6 @@ function calculate() {
     currentInput = expression;
     updateDisplay(); 
 
-    // 3. ПЕРЕВІРКА ЩОДЕННОГО ЛІМІТУ
     if (!checkDailyLimit()) {
         errorSound.play();
         currentDisplay.innerText = "Ліміт вичерпано (2/2)";
@@ -257,16 +312,16 @@ function calculate() {
         currentDisplay.style.color = "var(--danger)";
         setTimeout(() => {
             const freeCard = document.getElementById('card-free');
-            freeCard.innerHTML = `<h3>Ліміт закінчився</h3><p style="font-size:0.8rem; margin:10px 0; color:var(--text-muted);">Ваш трафік закінчився, купіть крутішу версію або зачекайте 24 години</p>`;
+            freeCard.innerHTML = `<h3>Ліміт вичерпано</h3><p style="font-size:0.8rem; margin:10px 0; color:var(--text-muted);">Ваш трафік закінчився, купіть крутішу версію або чекайте 24 години</p>`;
             paywallOverlay.classList.add('active');
         }, 1000);
-        // Скидаємо перешкоди, щоб завтра (або після оплати) він знову страждав
+        
+        requireAd = true; 
         requireQueue = true; 
         requireCaptcha = true;
         return;
     }
 
-    // 4. ПЕРЕВІРКА ДОСТУПУ ДО ФУНКЦІЙ
     const hasAdvancedMath = /sqrt|sin|cos/.test(currentInput);
     const hasProMath = /[*\/]/.test(currentInput);
     let canCalculate = false;
@@ -287,10 +342,11 @@ function calculate() {
 
     if (canCalculate) {
         setTimeout(() => {
-            let hallucination = (userMathPlan === 'free' && Math.random() < 1);
+            let hallucination = (userMathPlan === 'free' && Math.random() < 0.05);
             executeMath(hallucination);
             incrementUsage();
-            // Повертаємо муки для наступного прикладу
+            
+            requireAd = true;
             requireQueue = true; 
             requireCaptcha = true; 
         }, 1000);
@@ -302,6 +358,7 @@ function calculate() {
             currentDisplay.style.color = "var(--danger)";
             setTimeout(() => paywallOverlay.classList.add('active'), 800);
             
+            requireAd = true;
             requireQueue = true; 
             requireCaptcha = true;
         }, 1500);
@@ -335,7 +392,7 @@ function processPayment(plan) {
     paywallCards.style.display = 'none';
     processingModal.style.display = 'flex';
     let step = 0;
-    const steps = ["Зв'язок із банком...", "Перевірка балансу...", "Активація потужності..."];
+    const steps = ["Зв'язок з банком...", "Перевірка балансу...", "Активація потужності..."];
 
     const timer = setInterval(() => {
         if (step < steps.length) processText.innerText = steps[step++];
