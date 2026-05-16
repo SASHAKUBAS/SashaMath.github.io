@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | Преміальна Математика</title>
+    <title>MathGPT Ultra | Преміальна Математика</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -46,7 +46,8 @@
             <div style="padding: 1.5rem;">
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">ШІ втомився від ботів. Доведіть, що ви гідні дізнатися результат.</p>
                 
-                <div class="captcha-grid" id="captcha-grid"></div>
+                <div class="captcha-grid" id="captcha-grid">
+                    </div>
                 
                 <div id="captcha-error" class="error-box" style="margin-top: 10px; margin-bottom: 0;"></div>
                 
@@ -57,10 +58,24 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="ad-overlay" style="z-index: 170;">
+        <div class="plan-card auth-container" style="max-width: 400px; padding: 2rem; position: relative;">
+            <div style="position: absolute; top: 10px; right: 15px; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Реклама</div>
+            <h3 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 1rem;">Спонсорський блок</h3>
+            
+            <div id="ad-content" style="background: var(--display-bg); border: 2px dashed var(--glass-border); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 12px; transition: 0.3s; overflow: hidden;">
+                </div>
+            
+            <button id="skip-ad-btn" class="pay-btn outline" onclick="skipAd()" disabled style="opacity: 0.5; cursor: not-allowed;">
+                Пропустити (5)
+            </button>
+        </div>
+    </div>
+
     <header>
-        <div class="logo">MathPro</div>
+        <div class="logo">MathGPT Ultra</div>
         <div class="header-actions">
-            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Перемикнути тему">
+            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Перемкнути тему">
                 <span id="theme-icon">🌙</span>
             </button>
             <div class="active-plan" id="plan-indicator">
@@ -72,7 +87,7 @@
 
     <main>
         <section class="hero">
-            <h1>SashaMath</h1>
+            <h1>Калькулятор від Саші</h1>
             <p>Звільніть час для важливого, а обчислення довірте нам. Приєднуйтесь до 10 мільйонів користувачів, які вже обрали швидкість</p>
         </section>
 
@@ -151,7 +166,7 @@
                 <div class="price">$5<span> / міс</span></div>
                 <ul class="features">
                     <li>Безліміт +, -, ×, ÷</li>
-                    <li>Без щоденних лімітів</li>
+                    <li>Без денних лімітів</li>
                     <li class="locked">Черга на сервер</li>
                 </ul>
                 <button class="pay-btn" onclick="processPayment('Student')">Оновити</button>
@@ -159,10 +174,10 @@
 
             <div class="plan-card pro">
                 <h3>Pro Ultra</h3>
-                <div class="price">$20<span> / мес</span></div>
+                <div class="price">$20<span> / міс</span></div>
                 <ul class="features">
                     <li>Повний доступ</li>
-                    <li>Квантовий двигун</li>
+                    <li>Квантовий рушій</li>
                     <li>Без черг та капчі</li>
                 </ul>
                 <button class="pay-btn filled" onclick="processPayment('Pro')">Оновити</button>
