@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPro | Преміальна Математика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow right"></div>
+
+    <div class="modal-overlay active" id="auth-overlay" style="z-index: 200;">
+        <div class="plan-card auth-container">
+            <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Реєстрація</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Приєднуйтесь до еліти обчислень.</p>
+            
+            <input type="email" id="auth-email" class="auth-input" placeholder="Ваш E-mail" required>
+            <input type="password" id="auth-password" class="auth-input" placeholder="Придумайте надійний пароль" required>
+            
+            <div id="auth-error" class="error-box"></div>
+            
+            <button class="pay-btn filled" onclick="processAuth()">Створити акаунт</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="queue-overlay" style="z-index: 160;">
+        <div class="plan-card auth-container" style="max-width: 380px;">
+            <h3 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 1rem;">Черга на сервер</h3>
+            <div class="loader" style="margin: 0 auto 1.5rem auto;"></div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Квантові вузли перевантажені.</p>
+            <p style="font-size: 1.2rem; margin-bottom: 1.5rem; font-weight: 600;">Перед вами: <br><strong id="queue-count" style="color: var(--danger); font-size: 2.5rem; display: block; margin-top: 10px;">14 592</strong></p>
+            
+            <button class="pay-btn filled" style="background: var(--primary); color: white;" onclick="openPaywallFromQueue()">Пропустити (Купити Pro)</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="captcha-overlay" style="z-index: 150;">
+        <div class="plan-card auth-container" style="padding: 0; overflow: hidden; max-width: 350px;">
+            <div style="background: var(--secondary); color: white; padding: 1.5rem; text-align: left;">
+                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 0.2rem;">Виберіть усі зображення, де є</div>
+                <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0;">світлофори</h2>
+            </div>
+            <div style="padding: 1.5rem;">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">ШІ втомився від ботів. Доведіть, що ви гідні дізнатися результат.</p>
+                
+                <div class="captcha-grid" id="captcha-grid"></div>
+                
+                <div id="captcha-error" class="error-box" style="margin-top: 10px; margin-bottom: 0;"></div>
+                
+                <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                    <button class="pay-btn filled" style="width: auto; padding: 0.6rem 1.5rem;" onclick="verifyCaptcha()">Підтвердити</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">MathPro</div>
+        <div class="header-actions">
+            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Перемикнути тему">
+                <span id="theme-icon">🌙</span>
+            </button>
+            <div class="active-plan" id="plan-indicator">
+                <div class="dot"></div>
+                Поточний тариф: Базовий
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>SashaMath</h1>
+            <p>Звільніть час для важливого, а обчислення довірте нам. Приєднуйтесь до 10 мільйонів користувачів, які вже обрали швидкість</p>
+        </section>
+
+        <section class="calculator-wrapper">
+            <div class="display">
+                <div class="equation" id="equation"></div>
+                <div class="current" id="current">0</div>
+                <div class="ai-status" id="ai-status">Нейромережа активна...</div>
+            </div>
+            
+            <div class="keys">
+                <button class="btn sci" onclick="appendInput('sin(')">sin</button>
+                <button class="btn sci" onclick="appendInput('cos(')">cos</button>
+                <button class="btn sci" onclick="appendInput('sqrt(')">√</button>
+                <button class="btn operator" onclick="clearAll()">C</button>
+                
+                <button class="btn" onclick="appendInput('7')">7</button>
+                <button class="btn" onclick="appendInput('8')">8</button>
+                <button class="btn" onclick="appendInput('9')">9</button>
+                <button class="btn operator" onclick="appendInput('/')">÷</button>
+                
+                <button class="btn" onclick="appendInput('4')">4</button>
+                <button class="btn" onclick="appendInput('5')">5</button>
+                <button class="btn" onclick="appendInput('6')">6</button>
+                <button class="btn operator" onclick="appendInput('*')">×</button>
+                
+                <button class="btn" onclick="appendInput('1')">1</button>
+                <button class="btn" onclick="appendInput('2')">2</button>
+                <button class="btn" onclick="appendInput('3')">3</button>
+                <button class="btn operator" onclick="appendInput('-')">-</button>
+                
+                <button class="btn" onclick="appendInput('0')">0</button>
+                <button class="btn" onclick="appendInput('.')">.</button>
+                <button class="btn equal" onclick="calculate()">=</button>
+                <button class="btn operator" onclick="appendInput('+')">+</button>
+            </div>
+        </section>
+
+        <section class="marketing">
+            <div class="stats">
+                <div class="stat-item">
+                    <h4>10M+</h4>
+                    <p>Обчислень щодня</p>
+                </div>
+                <div class="stat-item">
+                    <h4>99.9%</h4>
+                    <p>Точність ШІ-моделі</p>
+                </div>
+                <div class="stat-item">
+                    <h4>0.01s</h4>
+                    <p>Квантова швидкість (Pro)</p>
+                </div>
+            </div>
+            <p class="quote">"Моє життя кардинально змінилося після підписки на преміум-додавання." - Ілон М.</p>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="paywall-overlay">
+        <button class="close-paywall" onclick="closePaywall()">×</button>
+        
+        <div class="paywall-container" id="paywall-cards">
+            <div class="plan-card" id="card-free">
+                <h3>Базовий</h3>
+                <div class="price">$0<span> / міс</span></div>
+                <ul class="features">
+                    <li>Додавання (+) та Віднімання (-)</li>
+                    <li>Ліміт: 2 приклади на день</li>
+                    <li class="locked">Черга на сервер</li>
+                </ul>
+                <button class="pay-btn outline" onclick="closePaywall()">Поточний тариф</button>
+            </div>
+
+            <div class="plan-card student">
+                <div class="badge">Популярно</div>
+                <h3>Студент</h3>
+                <div class="price">$5<span> / міс</span></div>
+                <ul class="features">
+                    <li>Безліміт +, -, ×, ÷</li>
+                    <li>Без щоденних лімітів</li>
+                    <li class="locked">Черга на сервер</li>
+                </ul>
+                <button class="pay-btn" onclick="processPayment('Student')">Оновити</button>
+            </div>
+
+            <div class="plan-card pro">
+                <h3>Pro Ultra</h3>
+                <div class="price">$20<span> / мес</span></div>
+                <ul class="features">
+                    <li>Повний доступ</li>
+                    <li>Квантовий двигун</li>
+                    <li>Без черг та капчі</li>
+                </ul>
+                <button class="pay-btn filled" onclick="processPayment('Pro')">Оновити</button>
+            </div>
+
+            <div class="plan-card eyecare">
+                <h3>EyeCare Pro</h3>
+                <div class="price">$99<span> / міс</span></div>
+                <ul class="features">
+                    <li>Темний режим (Dark Mode)</li>
+                    <li>ШІ-захист сітківки</li>
+                    <li>Синій фільтр</li>
+                </ul>
+                <button class="pay-btn filled" style="background: #06b6d4; color: white;" onclick="processPayment('EyeCare Pro')">Активувати</button>
+            </div>
+
+            <div class="plan-card mega">
+                <h3>Mega Pro</h3>
+                <div class="price">$200<span> / раз</span></div>
+                <ul class="features">
+                    <li>Ультимативна відповідь</li>
+                    <li>Вічний доступ</li>
+                    <li>Вимкнення реклами</li>
+                </ul>
+                <button class="pay-btn filled" style="background: #eab308; color: black;" onclick="processPayment('Mega Pro')">Купити</button>
+            </div>
+        </div>
+
+        <div class="processing-modal" id="processing-modal">
+            <div class="loader"></div>
+            <div class="process-text" id="process-text">Підключення...</div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
