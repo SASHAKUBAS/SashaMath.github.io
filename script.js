@@ -79,7 +79,7 @@ function processAuth() {
     } else {
         clickSound.play();
         authOverlay.classList.remove('active');
-        document.querySelector('.logo').innerText = `MathGPT Ultra | ${authEmail.value.split('@')[0]}`;
+        document.querySelector('.logo').innerText = `MathPro | ${authEmail.value.split('@')[0]}`;
     }
 }
 
